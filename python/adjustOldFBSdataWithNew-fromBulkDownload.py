@@ -39,7 +39,7 @@ def readData(filepath):
 
     return df, elements, areas
 
-def correctionBias(olddata, newdata, myElement, areas, out_dir_path):
+def correctionBias(olddata, newdata, myElement, areas, out_dir_path, elementDict, areaDict):
     # Initiate a list for results:
     results = []
     fishyResults = [] # collect fishy results to check out later
@@ -53,6 +53,15 @@ def correctionBias(olddata, newdata, myElement, areas, out_dir_path):
         # Slice by area and element:
         newdata2 = newdata[(newdata['Area Code'] == myCountry) & (newdata['Element Code'] == myElement)]        
         olddata2 = olddata[(olddata['Area Code'] == myCountry) & (olddata['Element Code'] == myElement)]      
+
+        # Sometimes an element is not found in the old data...
+        # Test:
+        if olddata2.empty:
+            print(f'Element {elementDict.get(myElement)} ({myElement}) was not found for country {areaDict.get(myCountry)} ({myCountry}) in the old data (-2014).')
+            continue
+        else:
+            pass
+        
         
         # Merge old and new data:
         data0 = pd.concat([olddata2, newdata2], axis = 0).reset_index()
@@ -126,12 +135,14 @@ def correctionBias(olddata, newdata, myElement, areas, out_dir_path):
             results.append(data2)
             
             
-
-    df = pd.concat(results, axis = 0, ignore_index = True).drop(columns = ['index'])
-    print(f'Results length: {len(results)}')
-    print(f'Saving results in {out_dir_path}')
-    df.to_csv(out_dir_path, index = False)
-    print(f'Cases that did not have 4 years of overlapping years and were omitted: {i}')
+    if results:
+        df = pd.concat(results, axis = 0, ignore_index = True).drop(columns = ['index'])
+        print(f'Results length: {len(results)}')
+        print(f'Saving results in {out_dir_path}')
+        df.to_csv(out_dir_path, index = False)
+        print(f'Cases that did not have 4 years of overlapping years and were omitted: {i}')
+    else:
+        print(f'No data on element {elementDict.get(myElement)} ({myElement}).')
     return None
 
 # HERE STARTS MAIN:
@@ -173,35 +184,16 @@ def main(args):
             print(f'You chose to fetch only {myElement}. That is {myElement2}')
             cleanString = re.sub(r'\W+','-', myElement2)
             out_dir_path2 = os.path.join(out_dir_path, cleanString + '.csv').replace('-.csv', '.csv')
-
-            # Sometimes an element is not found in the old data...
-            # Test:
-            dfold2 = dfold[dfold['Element Code'] == myElement]
-            if dfold2.empty:
-                print(f'Element {elementDict.get(myElement)} ({myElement}) was not found in the old data (-2014).')
-
-            else:
-            
-                correctionBias(dfold, dfnew, myElement, areas, out_dir_path2)   
-
-
-
+            correctionBias(dfold, dfnew, myElement, areas, out_dir_path2, elementDict, areaDict)
         else:
             # Loop all elements:
             print('We fetch all the elements')
             for myElement in elements:
-                # Sometimes an element is not found in the old data...
-                # Test:
-                dfold2 = dfold[dfold['Element Code'] == myElement]
-                if dfold.empty:
-                    print(f'Element {elementDict.get(myElement)} ({myElement}) was not found in the old data (-2014).')
-                    continue
-                else:
-                    myElement2 = elementDict.get(myElement)
-                    print(f'\n\n{myElement2}')
-                    cleanString = re.sub(r'\W+','-', myElement2)
-                    out_dir_path2 = os.path.join(out_dir_path, cleanString + '.csv').replace('-.csv', '.csv')
-                    correctionBias(dfold, dfnew, myElement, areas, out_dir_path2)   
+                myElement2 = elementDict.get(myElement)
+                print(f'\n\n{myElement2}')
+                cleanString = re.sub(r'\W+','-', myElement2)
+                out_dir_path2 = os.path.join(out_dir_path, cleanString + '.csv').replace('-.csv', '.csv')
+                correctionBias(dfold, dfnew, myElement, areas, out_dir_path2, elementDict, areaDict)
                 
         print('Done.')
 
