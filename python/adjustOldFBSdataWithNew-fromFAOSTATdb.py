@@ -1,6 +1,8 @@
 """
 2025-11-11 MY
 
+Downloads data from db, but this bulk download takes too much time. This good for downloading selected items/time series.
+
 RUN:
 python adjustOldFBSdataWithNew.py -e 645 -o /Users/myliheik/Documents/myPython/FBSadjusted/results
 
