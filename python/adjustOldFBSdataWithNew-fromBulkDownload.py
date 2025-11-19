@@ -195,8 +195,9 @@ def main(args):
             if myElement in dfold['Element Code'].values:
                 myElement2 = elementDict.get(myElement)
                 print(f'You chose to fetch only {myElement}. That is {myElement2}')
-                cleanString = re.sub(r'\W+','-', myElement2) + str(latestYear)
-                out_dir_path2 = os.path.join(out_dir_path, cleanString + '.csv')
+                cleanString = re.sub(r'\W+','-', myElement2)
+                filename = cleanString.replace('-.csv', '.csv') + '-' + str(latestYear)
+                out_dir_path2 = os.path.join(out_dir_path, filename + '.csv')
                 correctionBias(dfold, dfnew, myElement, areas, out_dir_path2, elementDict, areaDict)
             else:
                 print(f'\n\nNo old data on element {elementDict.get(myElement)} ({myElement}).')
@@ -208,8 +209,9 @@ def main(args):
                 if myElement in dfold['Element Code'].values:
                     myElement2 = elementDict.get(myElement)
                     print(f'\n\n{myElement2}')
-                    cleanString = re.sub(r'\W+','-', myElement2) + str(latestYear)
-                    out_dir_path2 = os.path.join(out_dir_path, cleanString + '.csv')
+                    cleanString = re.sub(r'\W+','-', myElement2) 
+                    filename = cleanString.replace('-.csv', '.csv') + '-' + str(latestYear)
+                    out_dir_path2 = os.path.join(out_dir_path, filename + '.csv')
                     correctionBias(dfold, dfnew, myElement, areas, out_dir_path2, elementDict, areaDict)
                 else:
                     print(f'\n\nNo old data on element {elementDict.get(myElement)} ({myElement}).')
