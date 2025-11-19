@@ -14,7 +14,6 @@ python adjustOldFBSdataWithNew-fromBulkDownload.py -o /Users/myliheik/Documents/
 
 """
 
-import faostat
 import pandas as pd
 
 import warnings
