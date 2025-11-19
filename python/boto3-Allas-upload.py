@@ -24,7 +24,7 @@ import textwrap
 import os
 import datetime
 import boto3
-
+import glob
 
 s3_credentials = '~/.boto3_credentials'
 s3_profile = 's3allas-project_2000371'
@@ -77,7 +77,7 @@ def main(args):
             print(f'\nDone.')
 
     except Exception as e:
-        print('\n\nUnable to read input or write out statistics. Check prerequisites and see exception output below.')
+        print('\n\nUnable to read input or upload files to Allas. Check prerequisites and see exception output below.')
         parser.print_help()
         raise e
 
