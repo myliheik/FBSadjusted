@@ -1,5 +1,16 @@
+The food balance sheet (FBS) by FAO has inconsistencies created by the change in methodology in 2014
 
+Food Balance Sheets at FAO: https://www.fao.org/4/X9892E/X9892e01.htm#TopOfPage
 
+Vonderschmidt et al. (2024) "Analysis combining the multiple FAO food balance sheet datasets needs careful treatment" The Lancet Planetary Health, Volume 8, Issue 2, e69 - e71
+
+Code available at https://github.com/axvonder/FAOComment.git
+
+FAO compiles Food Balance Sheet (FBS) statistics for 191 countries, which present a comprehensive picture of the agrifood situation of a country in a specified reference period, showing the pattern of a country's food supply and utilizations.
+
+Key differences between new and old Food Balance Sheet (FBS) methodology: https://files-faostat.fao.org/production/FBS/Key%20differences%20between%20new%20and%20old%20FBS%20June2022%20.pdf
+
+### Details
 
 In the FAO FBS database there are Elements, Items and Areas. Check the databases in 
 - The new (2010-): https://www.fao.org/faostat/en/#data/FBS
@@ -33,7 +44,7 @@ There are items and aggregated items such as 'Grand Total + (Total)' etc. There 
  
 
 
-### delimitations
+### Delimitations
 
 There are cases that are left out of the resulting adjusted dataset:
 
@@ -42,5 +53,12 @@ There are cases that are left out of the resulting adjusted dataset:
 - If there are less than four overlapping years in the subset of Element-Area-Item joined from the new dataset and the historical dataset, we omit the data. These cases are saved separately into the 'fishy' dataset.
 
 - If the adjusted values go below 0, they are set to zero.
+
+- Examples, see:
+
+### Results
+
+The resulting files are uploaded to Allas:
+
 
 
