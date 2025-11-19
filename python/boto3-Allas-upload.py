@@ -26,7 +26,7 @@ import datetime
 import boto3
 import glob
 
-s3_credentials = '~/.boto3_credentials2'
+s3_credentials = '~/.boto3_credentials'
 s3_profile = 's3allas-project_2000371'
 
 os.environ['AWS_SHARED_CREDENTIALS_FILE'] = s3_credentials
