@@ -76,13 +76,6 @@ def correctionBias(olddata, newdata, myElement, areas, out_dir_path, elementDict
         for myItem in items:
 
             data = data0[data0['Item Code'] == myItem]
-            # check: is there new data?
-            if not len(data[data['Domain'] == 'New FBS']) > 0:
-                print(data)
-                break
-                
-            else:
-                pass
 
             # Correction:
             # Take duplicated years into a subset (should be 2010-2013):
