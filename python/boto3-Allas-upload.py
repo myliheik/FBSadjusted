@@ -12,7 +12,7 @@ and then copy-paste your token to ~/.boto3_credentials (or point your s3_credent
 
 
 RUN:
-python boto3-Allas-upload.py -i /scratch/project_2000371/FBSadjusted/results \
+python boto3-Allas-upload.py -i /scratch/project_2000371/FBSadjusted/results/ \
 -b FoodBalanceSheets
 
 """
