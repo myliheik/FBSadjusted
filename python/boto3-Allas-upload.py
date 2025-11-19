@@ -56,14 +56,14 @@ def main(args):
 
         print(f'\nRead all results files and upload to Allas...')
 
-        fps = glob.iglob(args.inputpath + '.csv')
+        fps = glob.iglob(args.inputpath + '*.csv')
         for filename in fps:
             print(filename)
 
             # boto3:               
             boto3file = today + '-' + filename
             print(f'Saving all data into Allas {boto3file}')
-            #s3_resource.Object(my_bucketname, boto3file).upload_file(outputfile, ExtraArgs={'ACL':'public-read'})
+            s3_resource.Object(my_bucketname, boto3file).upload_file(outputfile, ExtraArgs={'ACL':'public-read'})
 
             
             # If you want to see the list of Allas files:
