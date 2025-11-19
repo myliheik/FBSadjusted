@@ -21,7 +21,7 @@ python boto3-Allas-upload.py -i /scratch/project_2000371/FBSadjusted/results \
 import pandas as pd
 import argparse
 import textwrap
-
+import os
 import datetime
 import boto3
 

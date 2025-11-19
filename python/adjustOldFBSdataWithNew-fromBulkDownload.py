@@ -76,6 +76,13 @@ def correctionBias(olddata, newdata, myElement, areas, out_dir_path, elementDict
         for myItem in items:
 
             data = data0[data0['Item Code'] == myItem]
+            # check: is there new data?
+            if not len(data[data['Domain'] == 'New FBS']) > 0:
+                print(data)
+                break
+                
+            else:
+                pass
 
             # Correction:
             # Take duplicated years into a subset (should be 2010-2013):
@@ -196,8 +203,8 @@ def main(args):
                 myElement2 = elementDict.get(myElement)
                 print(f'You chose to fetch only {myElement}. That is {myElement2}')
                 cleanString = re.sub(r'\W+','-', myElement2)
-                filename = cleanString.replace('-.csv', '.csv') + '-' + str(latestYear)
-                out_dir_path2 = os.path.join(out_dir_path, filename + '.csv')
+                filename = cleanString + '-' + str(latestYear)
+                out_dir_path2 = os.path.join(out_dir_path, (filename + '.csv').replace('--', '-'))
                 correctionBias(dfold, dfnew, myElement, areas, out_dir_path2, elementDict, areaDict)
             else:
                 print(f'\n\nNo old data on element {elementDict.get(myElement)} ({myElement}).')
@@ -210,8 +217,8 @@ def main(args):
                     myElement2 = elementDict.get(myElement)
                     print(f'\n\n{myElement2}')
                     cleanString = re.sub(r'\W+','-', myElement2) 
-                    filename = cleanString.replace('-.csv', '.csv') + '-' + str(latestYear)
-                    out_dir_path2 = os.path.join(out_dir_path, filename + '.csv')
+                    filename = cleanString + '-' + str(latestYear)
+                    out_dir_path2 = os.path.join(out_dir_path, (filename + '.csv').replace('--', '-'))
                     correctionBias(dfold, dfnew, myElement, areas, out_dir_path2, elementDict, areaDict)
                 else:
                     print(f'\n\nNo old data on element {elementDict.get(myElement)} ({myElement}).')
