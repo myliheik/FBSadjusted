@@ -2,11 +2,15 @@
 2025-11-16 MY
 
 RUN:
-python adjustOldFBSdataWithNew-fromBulkDownload.py -e 645 -o /Users/myliheik/Documents/myPython/FBSadjusted/results
+python adjustOldFBSdataWithNew-fromBulkDownload.py -e 645 -o /Users/myliheik/Documents/myPython/FBSadjusted/results \
+-n /Users/myliheik/Documents/myPython/FBSadjusted/data/FoodBalanceSheets_E_All_Data_Normalized/FoodBalanceSheets_E_All_Data_Normalized.csv \
+-h /Users/myliheik/Documents/myPython/FBSadjusted/data/FoodBalanceSheetsHistoric_E_All_Data_Normalized/FoodBalanceSheetsHistoric_E_All_Data_Normalized.csv
 
 OR for all elements:
 
-python adjustOldFBSdataWithNew-fromBulkDownload.py -o /Users/myliheik/Documents/myPython/FBSadjusted/results
+python adjustOldFBSdataWithNew-fromBulkDownload.py -o /Users/myliheik/Documents/myPython/FBSadjusted/results \
+-n /Users/myliheik/Documents/myPython/FBSadjusted/data/FoodBalanceSheets_E_All_Data_Normalized/FoodBalanceSheets_E_All_Data_Normalized.csv \
+-h /Users/myliheik/Documents/myPython/FBSadjusted/data/FoodBalanceSheetsHistoric_E_All_Data_Normalized/FoodBalanceSheetsHistoric_E_All_Data_Normalized.csv
 
 """
 
@@ -23,12 +27,6 @@ import textwrap
 
 # ignore warnings
 warnings.filterwarnings('ignore')
-
-fpnew = '/Users/myliheik/Documents/myPython/FBSadjusted/data/FoodBalanceSheets_E_All_Data_Normalized/FoodBalanceSheets_E_All_Data_Normalized.csv'
-fpold = '/Users/myliheik/Documents/myPython/FBSadjusted/data/FoodBalanceSheetsHistoric_E_All_Data_Normalized/FoodBalanceSheetsHistoric_E_All_Data_Normalized.csv'
-        
-
-
 
 ##### FUNCTIONS:
 
@@ -54,10 +52,16 @@ def correctionBias(olddata, newdata, myElement, areas, out_dir_path, elementDict
         newdata2 = newdata[(newdata['Area Code'] == myCountry) & (newdata['Element Code'] == myElement)]        
         olddata2 = olddata[(olddata['Area Code'] == myCountry) & (olddata['Element Code'] == myElement)]      
 
+        if newdata2.empty:
+            print(f'Element {elementDict.get(myElement)} ({myElement}) was not found for country {areaDict.get(myCountry)} ({myCountry}) in the new data (2010-).')
+            continue
+        else:
+            pass
+        
         # Sometimes an element is not found in the old data...
         # Test:
         if olddata2.empty:
-            print(f'Element {elementDict.get(myElement)} ({myElement}) was not found for country {areaDict.get(myCountry)} ({myCountry}) in the old data (-2014).')
+            print(f'Element {elementDict.get(myElement)} ({myElement}) was not found for country {areaDict.get(myCountry)} ({myCountry}) in the old data (-2013).')
             continue
         else:
             pass
@@ -66,7 +70,8 @@ def correctionBias(olddata, newdata, myElement, areas, out_dir_path, elementDict
         # Merge old and new data:
         data0 = pd.concat([olddata2, newdata2], axis = 0).reset_index()
         
-        items = newdata[(newdata['Area Code'] == myCountry) & (newdata['Element Code'] == myElement)]['Item Code'].unique()
+        # Search items of the newdata:
+        items = newdata2['Item Code'].unique()
 
         # Loop all items:
         for myItem in items:
@@ -83,16 +88,17 @@ def correctionBias(olddata, newdata, myElement, areas, out_dir_path, elementDict
             if len(correctionSubset) < 8:
                 #print(f'Less than 4 years is not enough to make the correction. We skip item {myItem} of {myCountry}')
                 i = i + 1
+                fishyResults.append(data)
                 continue
             else:
                 pass
 
 
             # Take the difference of each year and their mean:
-            MeanDiffBias = round(correctionSubset[['Year', 'Value']].groupby('Year').diff().mean()[0], 1)
+            MeanDiffBias = correctionSubset[['Year', 'Value']].groupby('Year').diff().mean()[0]
             # What is the scale of correction related to the original values (their mean):
             if not correctionSubset['Value'].mean() == 0:
-                MeanDiffBiasPerc = round(100*MeanDiffBias/correctionSubset['Value'].mean(),1)
+                MeanDiffBiasPerc = round(100*MeanDiffBias/correctionSubset['Value'].mean(), 1)
             else:
                 MeanDiffBiasPerc = 0
             #print(f'Correction bias: {MeanDiffBias}')
@@ -110,7 +116,7 @@ def correctionBias(olddata, newdata, myElement, areas, out_dir_path, elementDict
             #print(f'Subset2 data shape: {dataMeanDiffBias.shape}, should be 49.')
 
             # and add the bias correction:
-            dataMeanDiffBias['Value'] = round(pre2010data['Value'] + MeanDiffBias, 2)
+            dataMeanDiffBias['Value'] = round(pre2010data['Value'] + MeanDiffBias, 2) # should it rounded by 3?
             
             #print(MeanDiffBias)
             #print(dataMeanDiffBias)
@@ -122,7 +128,7 @@ def correctionBias(olddata, newdata, myElement, areas, out_dir_path, elementDict
             AdjustedFinal['Value'] = AdjustedFinal['Value'].mask(AdjustedFinal['Value'] < 0, 0)
 
             AdjustedFinal['Domain'] = 'BiasCorrectedAdjusted'
-            AdjustedFinal['MeanDiffBias'] = MeanDiffBias
+            AdjustedFinal['MeanDiffBias'] = round(MeanDiffBias, 1)
             AdjustedFinal['MeanDiffBiasPerc'] = MeanDiffBiasPerc
             data['MeanDiffBias'] = None
             data['MeanDiffBiasPerc'] = None               
@@ -141,6 +147,13 @@ def correctionBias(olddata, newdata, myElement, areas, out_dir_path, elementDict
         print(f'Saving results in {out_dir_path}')
         df.to_csv(out_dir_path, index = False)
         print(f'Cases that did not have 4 years of overlapping years and were omitted: {i}')
+        if i > 0:
+            dfFishy = pd.concat(fishyResults, axis = 0, ignore_index = True).drop(columns = ['index'])
+            out_dir_pathFishy = out_dir_path.replace('.csv', '-notAdjusted.csv')
+            print(f'Saving results in {out_dir_pathFishy}')
+            dfFishy.to_csv(out_dir_pathFishy, index = False)
+        else:
+            pass
     else:
         print(f'No data on element {elementDict.get(myElement)} ({myElement}).')
     return None
@@ -162,8 +175,8 @@ def main(args):
         # directory for results:
         Path(out_dir_path).mkdir(parents=True, exist_ok=True)
 
-        dfold = pd.read_csv(fpold, encoding = 'latin-1')
-        dfnew, elements, areas = readData(fpnew)       
+        dfold = pd.read_csv(args.fpold, encoding = 'latin-1') # There was a problem in reading, adding encoding here fixed the problem
+        dfnew, elements, areas = readData(args.fpnew)       
         
         # make a dictionary out of Element Code and Element:
         elementDict0 = dfnew[['Element Code', 'Element']].drop_duplicates()
@@ -180,20 +193,27 @@ def main(args):
         
         # if the user gives the Element:
         if myElement:            
-            myElement2 = elementDict.get(myElement)
-            print(f'You chose to fetch only {myElement}. That is {myElement2}')
-            cleanString = re.sub(r'\W+','-', myElement2)
-            out_dir_path2 = os.path.join(out_dir_path, cleanString + '.csv').replace('-.csv', '.csv')
-            correctionBias(dfold, dfnew, myElement, areas, out_dir_path2, elementDict, areaDict)
+            if myElement in dfold['Element Code'].values:
+                myElement2 = elementDict.get(myElement)
+                print(f'You chose to fetch only {myElement}. That is {myElement2}')
+                cleanString = re.sub(r'\W+','-', myElement2)
+                out_dir_path2 = os.path.join(out_dir_path, cleanString + '.csv').replace('-.csv', '.csv')
+                correctionBias(dfold, dfnew, myElement, areas, out_dir_path2, elementDict, areaDict)
+            else:
+                print(f'No data on element {elementDict.get(myElement)} ({myElement}).')
+                            
         else:
             # Loop all elements:
             print('We fetch all the elements')
             for myElement in elements:
-                myElement2 = elementDict.get(myElement)
-                print(f'\n\n{myElement2}')
-                cleanString = re.sub(r'\W+','-', myElement2)
-                out_dir_path2 = os.path.join(out_dir_path, cleanString + '.csv').replace('-.csv', '.csv')
-                correctionBias(dfold, dfnew, myElement, areas, out_dir_path2, elementDict, areaDict)
+                if myElement in dfold['Element Code'].values:
+                    myElement2 = elementDict.get(myElement)
+                    print(f'\n\n{myElement2}')
+                    cleanString = re.sub(r'\W+','-', myElement2)
+                    out_dir_path2 = os.path.join(out_dir_path, cleanString + '.csv').replace('-.csv', '.csv')
+                    correctionBias(dfold, dfnew, myElement, areas, out_dir_path2, elementDict, areaDict)
+                else:
+                    print(f'No data on element {elementDict.get(myElement)} ({myElement}).')
                 
         print('Done.')
 
@@ -205,7 +225,14 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      epilog=textwrap.dedent(__doc__))
-    
+    parser.add_argument('-n', '--fpnew',
+                        type=str,
+                        help='Path to the directory where the new food balance sheet data are saved.',
+                        )
+    parser.add_argument('-d', '--fpold',
+                        type=str,
+                        help='Path to the directory where the historical food balance sheet data are saved.',
+                        )    
     parser.add_argument('-e', '--element',
                         type=int,
                         help='Give the numeric code for the Element. Fetch only the given Element from the dataset. E.g. 645 for "Food supply quantity (kg/capita/yr)".',
