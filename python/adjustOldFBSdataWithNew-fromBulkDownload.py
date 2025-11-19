@@ -33,8 +33,8 @@ def readData(filepath):
     df = pd.read_csv(filepath)
     areas = df['Area Code'].unique()
     elements = df['Element Code'].unique()
-
-    return df, elements, areas
+    latestYear = df['Year'].max()
+    return df, elements, areas, latestYear
 
 def correctionBias(olddata, newdata, myElement, areas, out_dir_path, elementDict, areaDict):
     # Initiate a list for results:
@@ -175,7 +175,7 @@ def main(args):
         Path(out_dir_path).mkdir(parents=True, exist_ok=True)
 
         dfold = pd.read_csv(args.fpold, encoding = 'latin-1') # There was a problem in reading, adding encoding here fixed the problem
-        dfnew, elements, areas = readData(args.fpnew)       
+        dfnew, elements, areas, latestYear = readData(args.fpnew)       
         
         # make a dictionary out of Element Code and Element:
         elementDict0 = dfnew[['Element Code', 'Element']].drop_duplicates()
@@ -195,11 +195,11 @@ def main(args):
             if myElement in dfold['Element Code'].values:
                 myElement2 = elementDict.get(myElement)
                 print(f'You chose to fetch only {myElement}. That is {myElement2}')
-                cleanString = re.sub(r'\W+','-', myElement2)
-                out_dir_path2 = os.path.join(out_dir_path, cleanString + '.csv').replace('-.csv', '.csv')
+                cleanString = re.sub(r'\W+','-', myElement2) + str(latestYear)
+                out_dir_path2 = os.path.join(out_dir_path, cleanString + '.csv')
                 correctionBias(dfold, dfnew, myElement, areas, out_dir_path2, elementDict, areaDict)
             else:
-                print(f'No data on element {elementDict.get(myElement)} ({myElement}).')
+                print(f'\n\nNo old data on element {elementDict.get(myElement)} ({myElement}).')
                             
         else:
             # Loop all elements:
@@ -208,11 +208,11 @@ def main(args):
                 if myElement in dfold['Element Code'].values:
                     myElement2 = elementDict.get(myElement)
                     print(f'\n\n{myElement2}')
-                    cleanString = re.sub(r'\W+','-', myElement2)
-                    out_dir_path2 = os.path.join(out_dir_path, cleanString + '.csv').replace('-.csv', '.csv')
+                    cleanString = re.sub(r'\W+','-', myElement2) + str(latestYear)
+                    out_dir_path2 = os.path.join(out_dir_path, cleanString + '.csv')
                     correctionBias(dfold, dfnew, myElement, areas, out_dir_path2, elementDict, areaDict)
                 else:
-                    print(f'No data on element {elementDict.get(myElement)} ({myElement}).')
+                    print(f'\n\nNo old data on element {elementDict.get(myElement)} ({myElement}).')
                 
         print('Done.')
 
