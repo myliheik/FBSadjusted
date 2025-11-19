@@ -1,10 +1,8 @@
-The food balance sheet (FBS) by FAO has inconsistencies created by the change in methodology in 2014
+The food balance sheet (FBS) by FAO has inconsistencies created by the change in methodology in 2014.
 
 Food Balance Sheets at FAO: https://www.fao.org/4/X9892E/X9892e01.htm#TopOfPage
 
-Vonderschmidt et al. (2024) "Analysis combining the multiple FAO food balance sheet datasets needs careful treatment" The Lancet Planetary Health, Volume 8, Issue 2, e69 - e71
-
-Code available at https://github.com/axvonder/FAOComment.git
+Vonderschmidt et al. (2024) "Analysis combining the multiple FAO food balance sheet datasets needs careful treatment" The Lancet Planetary Health, Volume 8, Issue 2, e69 - e71. Code available at https://github.com/axvonder/FAOComment.git
 
 FAO compiles Food Balance Sheet (FBS) statistics for 191 countries, which present a comprehensive picture of the agrifood situation of a country in a specified reference period, showing the pattern of a country's food supply and utilizations.
 
