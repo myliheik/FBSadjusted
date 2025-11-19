@@ -1,7 +1,7 @@
 """
 2025-11-16 MY
 
-RUN:
+RUN for one element:
 python adjustOldFBSdataWithNew-fromBulkDownload.py -e 645 -o /Users/myliheik/Documents/myPython/FBSadjusted/results \
 -n /Users/myliheik/Documents/myPython/FBSadjusted/data/FoodBalanceSheets_E_All_Data_Normalized/FoodBalanceSheets_E_All_Data_Normalized.csv \
 -h /Users/myliheik/Documents/myPython/FBSadjusted/data/FoodBalanceSheetsHistoric_E_All_Data_Normalized/FoodBalanceSheetsHistoric_E_All_Data_Normalized.csv
