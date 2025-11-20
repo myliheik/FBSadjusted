@@ -12,6 +12,8 @@ python adjustOldFBSdataWithNew-fromBulkDownload.py -o /Users/myliheik/Documents/
 -n /Users/myliheik/Documents/myPython/FBSadjusted/data/FoodBalanceSheets_E_All_Data_Normalized/FoodBalanceSheets_E_All_Data_Normalized.csv \
 -h /Users/myliheik/Documents/myPython/FBSadjusted/data/FoodBalanceSheetsHistoric_E_All_Data_Normalized/FoodBalanceSheetsHistoric_E_All_Data_Normalized.csv
 
+Note: Area Code is shared between the old and new data. Area name can differ!
+
 """
 
 import pandas as pd
@@ -51,11 +53,11 @@ def correctionBias(olddata, newdata, myElement, areas, out_dir_path, elementDict
         newdata2 = newdata[(newdata['Area Code'] == myCountry) & (newdata['Element Code'] == myElement)]        
         olddata2 = olddata[(olddata['Area Code'] == myCountry) & (olddata['Element Code'] == myElement)]      
 
-        if newdata2.empty:
-            print(f'Element {elementDict.get(myElement)} ({myElement}) was not found for country {areaDict.get(myCountry)} ({myCountry}) in the new data (2010-).')
-            continue
-        else:
-            pass
+        #if newdata2.empty: # this never happens!
+        #    print(f'Element {elementDict.get(myElement)} ({myElement}) was not found for country {areaDict.get(myCountry)} ({myCountry}) in the new data (2010-).')
+        #    continue
+        #else:
+        #    pass
         
         # Sometimes an element is not found in the old data...
         # Test:
