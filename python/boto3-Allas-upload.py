@@ -26,8 +26,9 @@ import datetime
 import boto3
 import glob
 
-s3_credentials = '~/.boto3_credentials'
+s3_credentials = '~/.boto3_credentials3'
 s3_profile = 's3allas-project_2000371'
+s3_profile = 'default'
 
 os.environ['AWS_SHARED_CREDENTIALS_FILE'] = s3_credentials
 os.environ["AWS_REQUEST_CHECKSUM_CALCULATION"] = "when_required"
