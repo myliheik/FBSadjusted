@@ -1,0 +1,167 @@
+"""
+2025-11-02 MY
+
+RUN for all files in directory:
+
+python 02-interpolate-missing-values.py -o /Users/myliheik/Documents/myPython/FBSadjusted/results/preliminary -y 2023 -m linear
+
+WHERE:
+latestYear: the latest year in the data, is found in the filename, e.g. 2023
+method:     method for interpolation, e.g. linear
+
+"""
+
+import pandas as pd
+
+import warnings
+import re
+import os.path
+from pathlib import Path
+import argparse
+import textwrap
+import glob
+
+
+# ignore warnings
+warnings.filterwarnings('ignore')
+
+##### FUNCTIONS:
+def interpolation(df, myElement, areas, filepath, elementDict, areaDict, interpolationMethod):
+    # Initiate a list for results:
+    results = []
+    i = 0
+    # Loop all countries/regions:
+    for myCountry in areas:
+        # Slice by area and element:
+        df2 = df[(df['Area Code'] == myCountry) & (df['Element Code'] == myElement)]        
+        
+        # This should never happen:
+        if df2.empty: # this never happens!
+            print(f'Element {elementDict.get(myElement)} ({myElement}) was not found for country {areaDict.get(myCountry)} ({myCountry}) in the data.')
+            i = i + 1
+            continue
+        else:
+            pass
+        
+        
+        # Search items of the data:
+        items = df2['Item Code'].unique()
+
+        # Loop all items:
+        for myItem in items:
+
+            data = df2[df2['Item Code'] == myItem]
+            
+            # If the data is bias corrected, we take that:
+            data2 = data[data['Domain'] == 'BiasCorrectedAdjusted']
+            # If the data do not have correction, 
+            # then there was no overlapping years
+            # and we will work with the data from the new and old method.
+            if data2.empty:
+                data3 = data
+            else:
+                data3 = data2
+                        
+            # Interpolation:
+            
+            data00 = data3.assign(Time = pd.to_datetime(data['Year'], format = '%Y'))
+            data00.set_index('Time', inplace = True)
+            data4 = data00.assign(NAsInterpolated = data00['Value'].interpolate(method = interpolationMethod, limit_area = "inside"), interpolationMethod = interpolationMethod)
+            results.append(data4)
+            #print(data4)
+            
+            #break
+            
+        
+    if results:
+        dfResults = pd.concat(results, axis = 0, ignore_index = True)#.drop(columns = ['index'])
+        print(f'Results length: {len(results)}')
+        print(f'Saving results in {filepath}')
+        dfResults.to_csv(filepath, index = False)
+        print(f'Cases with chaos: {i}')
+    else:
+        print(f'No data on element {elementDict.get(myElement)} ({myElement}).')
+    return None
+
+
+
+# HERE STARTS MAIN:
+
+def main(args):  
+    try:
+        if not args.outputpath:
+            raise Exception('Missing output dir argument. Try --help .')
+
+        print(f'\n\n02-interpolate-missing-values.py')
+
+        path = Path(args.outputpath)
+        out_dir_path = os.path.join(path.parent.absolute(), 'interpolated') 
+        
+        print(f'\n Files will be saved in {out_dir_path}')
+        # directory for results:
+        Path(out_dir_path).mkdir(parents=True, exist_ok=True)
+
+        
+        fps = glob.glob(args.outputpath + '/*' + args.latestYear + '*.csv')
+        for fp in fps:
+            filebase = os.path.basename(fp)
+            filepath = os.path.join(out_dir_path, filebase)
+            if not 'notAdjusted' in fp:
+                df = pd.read_csv(fp)
+                # read notAdjusted pair of the data:
+                fpnotAdjusted = Path(fp.replace('.csv', '-notAdjusted.csv'))
+                if fpnotAdjusted.is_file():
+                    dfnotAdjusted = pd.read_csv(fpnotAdjusted)
+                    # join adjusted and not Adjusted data:
+                    data0 = pd.concat([df, dfnotAdjusted], axis = 0).reset_index()
+                else:
+                    data0 = df
+                
+                
+                areas = data0['Area Code'].unique()
+                if len(data0['Element Code'].unique()) == 1:
+                    myElement = data0['Element Code'][0] # should be one
+                else: 
+                    print(f'Data contains multiple elements. Something is wrong. Existing.')
+                
+                # make a dictionary out of Element Code and Element:
+                elementDict0 = data0[['Element Code', 'Element']].drop_duplicates()
+                elementDict = dict(zip(elementDict0['Element Code'], elementDict0['Element']))
+                
+                # make a dictionary out of Area Code and Area:
+                areaDict0 = data0[['Area Code', 'Area']].drop_duplicates()
+                areaDict = dict(zip(areaDict0['Area Code'], areaDict0['Area']))
+
+                interpolation(df, myElement, areas, filepath, elementDict, areaDict, args.interpolationMethod)
+                
+                
+            else:
+                continue
+
+        
+        print('Done.')
+
+    except Exception as e:
+        print('\n\nUnable to read input or write out results. Check prerequisites and see exception output below.')
+        parser.print_help()
+        raise e
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
+                                     epilog=textwrap.dedent(__doc__))
+    parser.add_argument('-m', '--interpolationMethod',
+                        type=str,
+                        help='Method use in the interpolation.',
+                        default = 'spline'
+                        )    
+    parser.add_argument('-y', '--latestYear',
+                        type=str,
+                        help='The latest year in the data, should be found in the filename.',
+                        default = 2023)
+    parser.add_argument('-o', '--outputpath',
+                        type=str,
+                        help='Path to the directory where the corrected food balance sheets were saved.',
+                        default='.')
+
+    args = parser.parse_args()
+    main(args)

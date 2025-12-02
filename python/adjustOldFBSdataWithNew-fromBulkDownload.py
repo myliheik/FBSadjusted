@@ -2,15 +2,15 @@
 2025-11-16 MY
 
 RUN for one element:
-python adjustOldFBSdataWithNew-fromBulkDownload.py -e 645 -o /Users/myliheik/Documents/myPython/FBSadjusted/results \
+python adjustOldFBSdataWithNew-fromBulkDownload.py -e 645 -o /Users/myliheik/Documents/myPython/FBSadjusted/results/preliminary \
 -n /Users/myliheik/Documents/myPython/FBSadjusted/data/FoodBalanceSheets_E_All_Data_Normalized/FoodBalanceSheets_E_All_Data_Normalized.csv \
--h /Users/myliheik/Documents/myPython/FBSadjusted/data/FoodBalanceSheetsHistoric_E_All_Data_Normalized/FoodBalanceSheetsHistoric_E_All_Data_Normalized.csv
+-d /Users/myliheik/Documents/myPython/FBSadjusted/data/FoodBalanceSheetsHistoric_E_All_Data_Normalized/FoodBalanceSheetsHistoric_E_All_Data_Normalized.csv
 
 OR for all elements:
 
-python adjustOldFBSdataWithNew-fromBulkDownload.py -o /Users/myliheik/Documents/myPython/FBSadjusted/results \
+python adjustOldFBSdataWithNew-fromBulkDownload.py -o /Users/myliheik/Documents/myPython/FBSadjusted/results/preliminary \
 -n /Users/myliheik/Documents/myPython/FBSadjusted/data/FoodBalanceSheets_E_All_Data_Normalized/FoodBalanceSheets_E_All_Data_Normalized.csv \
--h /Users/myliheik/Documents/myPython/FBSadjusted/data/FoodBalanceSheetsHistoric_E_All_Data_Normalized/FoodBalanceSheetsHistoric_E_All_Data_Normalized.csv
+-d /Users/myliheik/Documents/myPython/FBSadjusted/data/FoodBalanceSheetsHistoric_E_All_Data_Normalized/FoodBalanceSheetsHistoric_E_All_Data_Normalized.csv
 
 Note: Area Code is shared between the old and new data. Area name can differ!
 
@@ -86,8 +86,20 @@ def correctionBias(olddata, newdata, myElement, areas, out_dir_path, elementDict
             
             #print(f'Subset data shape: {correctionSubset.shape}, should be 8.')
 
-            if len(correctionSubset) < 8:
-                #print(f'Less than 4 years is not enough to make the correction. We skip item {myItem} of {myCountry}')
+            # How many overlapping years (should be years 2010-2013):
+            if len(correctionSubset) == 8:
+                OverlappingYears = 4
+            elif len(correctionSubset) == 6:
+                OverlappingYears = 3
+            elif len(correctionSubset) == 4:
+                OverlappingYears = 2
+            elif len(correctionSubset) == 2:
+                OverlappingYears = 1
+            else:
+                OverlappingYears = 0
+            
+            if OverlappingYears == 0:
+                #print(f'No overlapping years (2010-2013) to make the correction. We skip item {myItem} of {myCountry}')
                 i = i + 1
                 fishyResults.append(data)
                 continue
@@ -138,8 +150,10 @@ def correctionBias(olddata, newdata, myElement, areas, out_dir_path, elementDict
             #print(f'Data shape: {data.shape}, should be 67.')
 
             data2 = pd.concat([data, AdjustedFinal])
+            # Add new flag variable 'OverlappingYears':
+            data3 = data2.assign(OverlappingYears =  OverlappingYears)
                  
-            results.append(data2)
+            results.append(data3)
             
             
     if results:
@@ -147,12 +161,14 @@ def correctionBias(olddata, newdata, myElement, areas, out_dir_path, elementDict
         print(f'Results length: {len(results)}')
         print(f'Saving results in {out_dir_path}')
         df.to_csv(out_dir_path, index = False)
-        print(f'Cases that did not have 4 years of overlapping years and were omitted: {i}')
+        print(f'Cases that did not have overlapping years and were omitted: {i}')
         if i > 0:
             dfFishy = pd.concat(fishyResults, axis = 0, ignore_index = True).drop(columns = ['index'])
+            # Add new flag variable 'OverlappingYears':
+            dfFishy2 = dfFishy.assign(OverlappingYears =  0)            
             out_dir_pathFishy = out_dir_path.replace('.csv', '-notAdjusted.csv')
             print(f'Saving results in {out_dir_pathFishy}')
-            dfFishy.to_csv(out_dir_pathFishy, index = False)
+            dfFishy2.to_csv(out_dir_pathFishy, index = False)
         else:
             pass
     else:
