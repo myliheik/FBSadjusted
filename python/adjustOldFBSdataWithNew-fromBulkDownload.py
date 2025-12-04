@@ -2,13 +2,13 @@
 2025-11-16 MY
 
 RUN for one element:
-python adjustOldFBSdataWithNew-fromBulkDownload.py -e 645 -o /Users/myliheik/Documents/myPython/FBSadjusted/results/preliminary \
+python 01-adjustOldFBSdataWithNew-fromBulkDownload.py -e 645 -o /Users/myliheik/Documents/myPython/FBSadjusted/results/adjusted \
 -n /Users/myliheik/Documents/myPython/FBSadjusted/data/FoodBalanceSheets_E_All_Data_Normalized/FoodBalanceSheets_E_All_Data_Normalized.csv \
 -d /Users/myliheik/Documents/myPython/FBSadjusted/data/FoodBalanceSheetsHistoric_E_All_Data_Normalized/FoodBalanceSheetsHistoric_E_All_Data_Normalized.csv
 
 OR for all elements:
 
-python adjustOldFBSdataWithNew-fromBulkDownload.py -o /Users/myliheik/Documents/myPython/FBSadjusted/results/preliminary \
+python 01-adjustOldFBSdataWithNew-fromBulkDownload.py -o /Users/myliheik/Documents/myPython/FBSadjusted/results/adjusted \
 -n /Users/myliheik/Documents/myPython/FBSadjusted/data/FoodBalanceSheets_E_All_Data_Normalized/FoodBalanceSheets_E_All_Data_Normalized.csv \
 -d /Users/myliheik/Documents/myPython/FBSadjusted/data/FoodBalanceSheetsHistoric_E_All_Data_Normalized/FoodBalanceSheetsHistoric_E_All_Data_Normalized.csv
 
@@ -182,7 +182,7 @@ def main(args):
         if not args.outputpath:
             raise Exception('Missing output dir argument. Try --help .')
 
-        print(f'\n\nadjustOldFBSdataWithNew-fromBulkDownload.py')
+        print(f'\n\n01-adjustOldFBSdataWithNew-fromBulkDownload.py')
         
 
         myElement = args.element

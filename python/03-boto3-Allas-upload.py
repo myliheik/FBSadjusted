@@ -12,8 +12,8 @@ and then copy-paste your token to ~/.boto3_credentials (or point your s3_credent
 
 
 RUN:
-python boto3-Allas-upload.py -i /scratch/project_2000371/FBSadjusted/results/ \
--b FoodBalanceSheets
+python 03-boto3-Allas-upload.py -i /scratch/project_2000371/FBSadjusted/results/adjusted -b FoodBalanceSheets
+python 03-boto3-Allas-upload.py -i /scratch/project_2000371/FBSadjusted/results/NAsInterpolated -b FoodBalanceSheets
 
 """
 
@@ -46,11 +46,10 @@ def main(args):
         if not args.inputpath:
             raise Exception('Missing input filepath argument. Try --help .')
 
-        print(f'\nboto3-Allas-upload.py')
+        print(f'\n03-boto3-Allas-upload.py')
         print(f'\nResults in: {args.inputpath}')
         print(f'\nFiles saved in s3 bucket: {args.bucketname}')
 
-        s3_resource = boto3.resource('s3', endpoint_url='https://a3s.fi')
         my_bucketname = args.bucketname
         
         fp = args.inputpath

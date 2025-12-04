@@ -3,7 +3,7 @@
 
 RUN for all files in directory:
 
-python 02-interpolate-missing-values.py -o /Users/myliheik/Documents/myPython/FBSadjusted/results/preliminary -y 2023 -m linear
+python 02-interpolate-missing-values.py -o /Users/myliheik/Documents/myPython/FBSadjusted/results/adjusted -y 2023 -m linear
 
 WHERE:
 latestYear: the latest year in the data, is found in the filename, e.g. 2023
@@ -76,9 +76,10 @@ def interpolation(df, myElement, areas, filepath, elementDict, areaDict, interpo
     if results:
         dfResults = pd.concat(results, axis = 0, ignore_index = True)#.drop(columns = ['index'])
         print(f'Results length: {len(results)}')
-        print(f'Saving results in {filepath}')
-        dfResults.to_csv(filepath, index = False)
         print(f'Cases with chaos: {i}')
+        print(f'Saving results in {filepath}\n')
+        dfResults.to_csv(filepath, index = False)
+        
     else:
         print(f'No data on element {elementDict.get(myElement)} ({myElement}).')
     return None
@@ -97,7 +98,7 @@ def main(args):
         path = Path(args.outputpath)
         out_dir_path = os.path.join(path.parent.absolute(), 'interpolated') 
         
-        print(f'\n Files will be saved in {out_dir_path}')
+        #print(f'\nFiles will be saved in {out_dir_path}')
         # directory for results:
         Path(out_dir_path).mkdir(parents=True, exist_ok=True)
 
@@ -106,11 +107,15 @@ def main(args):
         for fp in fps:
             filebase = os.path.basename(fp)
             filepath = os.path.join(out_dir_path, filebase)
+            
+            
             if not 'notAdjusted' in fp:
+                print(f'Reading {fp}')
                 df = pd.read_csv(fp)
                 # read notAdjusted pair of the data:
                 fpnotAdjusted = Path(fp.replace('.csv', '-notAdjusted.csv'))
                 if fpnotAdjusted.is_file():
+                    print(f'Reading {fpnotAdjusted}')
                     dfnotAdjusted = pd.read_csv(fpnotAdjusted)
                     # join adjusted and not Adjusted data:
                     data0 = pd.concat([df, dfnotAdjusted], axis = 0).reset_index()
