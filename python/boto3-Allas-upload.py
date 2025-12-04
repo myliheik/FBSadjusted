@@ -72,8 +72,8 @@ def main(args):
             boto3file = today + '-' + os.path.basename(filename)
             print(f'Saving all data into Allas {boto3file}')
             #s3_resource.Object(my_bucketname, boto3file).upload_file(filename, ExtraArgs={'ACL':'public-read'})
-            
-            s3_resource.Object(bucket, file).put(Body=bytes(json.dumps(data).encode('UTF-8')), ExtraArgs={'ACL':'public-read'})
+            # Kylli's:
+            s3_resource.Object(my_bucketname, boto3file).put(Body=bytes(json.dumps(filename).encode('UTF-8')), ExtraArgs={'ACL':'public-read'})
 
             
             # If you want to see the list of Allas files:
