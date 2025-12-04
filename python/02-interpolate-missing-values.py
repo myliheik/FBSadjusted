@@ -3,7 +3,7 @@
 
 RUN for all files in directory:
 
-python 02-interpolate-missing-values.py -o /Users/myliheik/Documents/myPython/FBSadjusted/results/adjusted -y 2023 -m linear
+python 02-interpolate-missing-values.py -i /Users/myliheik/Documents/myPython/FBSadjusted/results/adjusted -y 2023 -m linear
 
 WHERE:
 latestYear: the latest year in the data, is found in the filename, e.g. 2023
@@ -75,8 +75,8 @@ def interpolation(df, myElement, areas, filepath, elementDict, areaDict, interpo
         
     if results:
         dfResults = pd.concat(results, axis = 0, ignore_index = True)#.drop(columns = ['index'])
+        print(f'Cases with chaos (missing country): {i}')
         print(f'Results length: {len(results)}')
-        print(f'Cases with chaos: {i}')
         print(f'Saving results in {filepath}\n')
         dfResults.to_csv(filepath, index = False)
         
@@ -90,12 +90,12 @@ def interpolation(df, myElement, areas, filepath, elementDict, areaDict, interpo
 
 def main(args):  
     try:
-        if not args.outputpath:
+        if not args.inputpath:
             raise Exception('Missing output dir argument. Try --help .')
 
-        print(f'\n\n02-interpolate-missing-values.py')
+        print(f'\n\n02-interpolate-missing-values.py\n\n')
 
-        path = Path(args.outputpath)
+        path = Path(args.inputpath)
         out_dir_path = os.path.join(path.parent.absolute(), 'interpolated') 
         
         #print(f'\nFiles will be saved in {out_dir_path}')
@@ -103,7 +103,7 @@ def main(args):
         Path(out_dir_path).mkdir(parents=True, exist_ok=True)
 
         
-        fps = glob.glob(args.outputpath + '/*' + args.latestYear + '*.csv')
+        fps = glob.glob(args.inputpath + '/*' + args.latestYear + '*.csv')
         for fp in fps:
             filebase = os.path.basename(fp)
             filepath = os.path.join(out_dir_path, filebase)
@@ -122,7 +122,6 @@ def main(args):
                 else:
                     data0 = df
                 
-                
                 areas = data0['Area Code'].unique()
                 if len(data0['Element Code'].unique()) == 1:
                     myElement = data0['Element Code'][0] # should be one
@@ -136,7 +135,7 @@ def main(args):
                 # make a dictionary out of Area Code and Area:
                 areaDict0 = data0[['Area Code', 'Area']].drop_duplicates()
                 areaDict = dict(zip(areaDict0['Area Code'], areaDict0['Area']))
-
+                #print(myElement, elementDict)
                 interpolation(df, myElement, areas, filepath, elementDict, areaDict, args.interpolationMethod)
                 
                 
@@ -156,16 +155,16 @@ if __name__ == '__main__':
                                      epilog=textwrap.dedent(__doc__))
     parser.add_argument('-m', '--interpolationMethod',
                         type=str,
-                        help='Method use in the interpolation.',
-                        default = 'spline'
+                        help='Method to fill NaN values using interpolation. E.g. linear, nearest, zero. Default linear. Check pandas.DataFrame.interpolate for more information.',
+                        default = 'linear'
                         )    
     parser.add_argument('-y', '--latestYear',
                         type=str,
                         help='The latest year in the data, should be found in the filename.',
                         default = 2023)
-    parser.add_argument('-o', '--outputpath',
+    parser.add_argument('-i', '--inputpath',
                         type=str,
-                        help='Path to the directory where the corrected food balance sheets were saved.',
+                        help='Path to the directory where the adjusted food balance sheets were saved.',
                         default='.')
 
     args = parser.parse_args()
