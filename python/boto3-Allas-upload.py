@@ -27,15 +27,22 @@ import boto3
 import glob
 
 s3_credentials = '~/.boto3_credentials3'
+s3_credentials = '~/.boto3_credentials'
 s3_profile = 's3allas-project_2000371'
-s3_profile = 'default'
+#s3_profile = 'default'
 
 os.environ['AWS_SHARED_CREDENTIALS_FILE'] = s3_credentials
 os.environ["AWS_REQUEST_CHECKSUM_CALCULATION"] = "when_required"
 os.environ["AWS_RESPONSE_CHECKSUM_VALIDATION"] = "when_required"
 
 s3_session = boto3.Session(profile_name=s3_profile)
-s3_resource = s3_session.resource('s3', endpoint_url='https://a3s.fi')
+
+#s3_resource = s3_session.resource('s3', endpoint_url='https://a3s.fi')
+
+# Kylli:
+#session = boto3.Session(profile_name="2000599")
+#s3_resource = session.resource('s3', endpoint_url=endpoint)
+
 
 today = datetime.datetime.now().strftime('%Y-%b')
 
@@ -64,7 +71,9 @@ def main(args):
             # boto3:               
             boto3file = today + '-' + os.path.basename(filename)
             print(f'Saving all data into Allas {boto3file}')
-            s3_resource.Object(my_bucketname, boto3file).upload_file(filename, ExtraArgs={'ACL':'public-read'})
+            #s3_resource.Object(my_bucketname, boto3file).upload_file(filename, ExtraArgs={'ACL':'public-read'})
+            
+            s3_resource.Object(bucket, file).put(Body=bytes(json.dumps(data).encode('UTF-8')), ExtraArgs={'ACL':'public-read'})
 
             
             # If you want to see the list of Allas files:
