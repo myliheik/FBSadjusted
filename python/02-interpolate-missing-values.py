@@ -49,32 +49,45 @@ def interpolation(df, myElement, areas, filepath, elementDict, areaDict, interpo
 
         # Loop all items:
         for myItem in items:
-
             data = df2[df2['Item Code'] == myItem]
             
             # If the data is bias corrected, we take that:
             data2 = data[data['Domain'] == 'BiasCorrectedAdjusted']
             # If the data do not have correction, 
             # then there was no overlapping years
-            # and we will work with the data from the new and old method.
-            if data2.empty:
-                data3 = data
-            else:
-                data3 = data2
+            # and we will work with the data from the new and old method (notAdjusted.csvs)
+            if data2.empty: # only notAdjusted data for this country and item
+                data3 = data.copy()
+            else: # BiasCorrectedAdjusted data for this country and item
+                data3 = data2.copy()
                         
-            # Interpolation:
-            
-            data00 = data3.assign(Time = pd.to_datetime(data['Year'], format = '%Y'))
-            data00.set_index('Time', inplace = True)
-            data4 = data00.assign(NAsInterpolated = data00['Value'].interpolate(method = interpolationMethod, limit_area = "inside"), interpolationMethod = interpolationMethod)
+            ############ Interpolation:
+            # if there are some years missing, do interpolation:
+            missing = set(range(data3['Year'].min(), data3['Year'].max())) - set(data3['Year'])
+            if len(missing) > 0:
+                #print(f'Missing years: {missing}')
+                data00 = pd.concat([data3, pd.DataFrame({'Year': list(missing), 'Domain': 'Interpolated', 'interpolationMethod': interpolationMethod.title()})], axis = 0, ignore_index = True)
+                data01 = data00.assign(Time = pd.to_datetime(data00['Year'], format = '%Y'))
+                data01.set_index('Time', inplace = True)
+                data44 = data01.assign(NAsInterpolated = data01['Value'].interpolate(method = interpolationMethod))
+                # add metadata:
+                # with dictionary:
+                metaDict = dict(data44.iloc[0][['Area Code', 'Area', 'Item Code', 'Item', 'Element Code', 'Element', 'Unit']])
+                #metaDict.update({'interpolationMethod': interpolationMethod.title()}) # not for all 
+                data4 = data44.fillna(metaDict)
+
+            else: # no need for interpolation, we just add new variables NAsInterpolated, interpolationMethod and Time
+                data4 = data3.assign(NAsInterpolated = data3['Value'], interpolationMethod = None, Time = pd.to_datetime(data3['Year'], format = '%Y'))
+                data4.set_index('Time', inplace = True)
+                
+
             results.append(data4)
-            #print(data4)
-            
-            #break
+        
             
         
     if results:
         dfResults = pd.concat(results, axis = 0, ignore_index = True)#.drop(columns = ['index'])
+
         print(f'Cases with chaos (missing country): {i}')
         print(f'Results length: {len(results)}')
         print(f'Saving results in {filepath}\n')
@@ -96,7 +109,12 @@ def main(args):
         print(f'\n\n02-interpolate-missing-values.py\n\n')
 
         path = Path(args.inputpath)
-        out_dir_path = os.path.join(path.parent.absolute(), 'interpolated') 
+        if args.interpolationMethod == 'linear':
+            newdirectory = 'interpolated'
+        else:
+            newdirectory = 'interpolated' + args.interpolationMethod.title()
+            
+        out_dir_path = os.path.join(path.parent.absolute(), newdirectory) 
         
         #print(f'\nFiles will be saved in {out_dir_path}')
         # directory for results:
@@ -112,14 +130,21 @@ def main(args):
             if not 'notAdjusted' in fp:
                 print(f'Reading {fp}')
                 df = pd.read_csv(fp)
+                #print(df['Domain'].unique())
                 # read notAdjusted pair of the data:
                 fpnotAdjusted = Path(fp.replace('.csv', '-notAdjusted.csv'))
                 if fpnotAdjusted.is_file():
                     print(f'Reading {fpnotAdjusted}')
                     dfnotAdjusted = pd.read_csv(fpnotAdjusted)
+                    #print(dfnotAdjusted['Domain'].unique())
                     # join adjusted and not Adjusted data:
-                    data0 = pd.concat([df, dfnotAdjusted], axis = 0).reset_index()
+                    data0 = pd.concat([df, dfnotAdjusted], axis = 0, ignore_index = True).reset_index()
+                    if not (len(dfnotAdjusted) + len(df)) == len(data0):
+                        print(f'Something is wrong, data not merged properly.')
+                        break
+
                 else:
+                    print(f'No notAdjusted data in {fpnotAdjusted}. We only use {fp}\n')
                     data0 = df
                 
                 areas = data0['Area Code'].unique()
@@ -136,9 +161,9 @@ def main(args):
                 areaDict0 = data0[['Area Code', 'Area']].drop_duplicates()
                 areaDict = dict(zip(areaDict0['Area Code'], areaDict0['Area']))
                 #print(myElement, elementDict)
-                interpolation(df, myElement, areas, filepath, elementDict, areaDict, args.interpolationMethod)
-                
-                
+                interpolation(data0, myElement, areas, filepath, elementDict, areaDict, args.interpolationMethod)
+                #break
+                    
             else:
                 continue
 
