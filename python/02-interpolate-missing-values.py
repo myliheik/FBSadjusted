@@ -68,8 +68,8 @@ def interpolation(df, myElement, areas, filepath, elementDict, areaDict, interpo
                 #print(f'Missing years: {missing}')
                 data00 = pd.concat([data3, pd.DataFrame({'Year': list(missing), 'Domain': 'Interpolated', 'interpolationMethod': interpolationMethod.title()})], axis = 0, ignore_index = True)
                 data01 = data00.assign(Time = pd.to_datetime(data00['Year'], format = '%Y'))
-                data01.set_index('Time', inplace = True)
-                data44 = data01.assign(NAsInterpolated = data01['Value'].interpolate(method = interpolationMethod))
+                data011 = data01.set_index('Time', inplace = False).sort_index()
+                data44 = data011.assign(NAsInterpolated = data011['Value'].interpolate(method = interpolationMethod))
                 # add metadata:
                 # with dictionary:
                 metaDict = dict(data44.iloc[0][['Area Code', 'Area', 'Item Code', 'Item', 'Element Code', 'Element', 'Unit']])
@@ -109,10 +109,10 @@ def main(args):
         print(f'\n\n02-interpolate-missing-values.py\n\n')
 
         path = Path(args.inputpath)
-        if args.interpolationMethod == 'linear':
-            newdirectory = 'interpolated'
-        else:
-            newdirectory = 'interpolated' + args.interpolationMethod.title()
+        #if args.interpolationMethod == 'linear':
+        #    newdirectory = 'interpolated'
+        #else:
+        newdirectory = 'interpolated' + args.interpolationMethod.title()
             
         out_dir_path = os.path.join(path.parent.absolute(), newdirectory) 
         
