@@ -56,7 +56,7 @@ There are cases that are left out of the resulting adjusted dataset:
 - If the adjusted values go below 0, they are set to zero.
 
 - Examples that work well, see: https://github.com/myliheik/FBSadjusted/blob/main/notebooks/01-plotResults.ipynb
-- Examples that have data gaps, not enough overlapping years (4), or other fishy issues: https://github.com/myliheik/FBSadjusted/blob/main/notebooks/02-plotFishyResults.ipynb
+- Examples that have data gaps, no overlapping years, or other fishy issues: https://github.com/myliheik/FBSadjusted/blob/main/notebooks/02-plotFishyResults.ipynb
 
 ### Results
 
