@@ -1,3 +1,6 @@
+
+## FBS transformations
+
 The food balance sheet (FBS) by FAO has inconsistencies created by the change in methodology in 2014.
 
 Food Balance Sheets at FAO: https://www.fao.org/4/X9892E/X9892e01.htm#TopOfPage
@@ -52,12 +55,22 @@ There are cases that are left out of the resulting adjusted dataset:
 
 - If the adjusted values go below 0, they are set to zero.
 
-- Examples that work well, see: https://github.com/myliheik/FBSadjusted/blob/main/notebooks/plotResults.ipynb
-- Examples that have data gaps, not enough overlapping years (4), or other fishy issues: https://github.com/myliheik/FBSadjusted/blob/main/notebooks/plotFishyResults.ipynb
+- Examples that work well, see: https://github.com/myliheik/FBSadjusted/blob/main/notebooks/01-plotResults.ipynb
+- Examples that have data gaps, not enough overlapping years (4), or other fishy issues: https://github.com/myliheik/FBSadjusted/blob/main/notebooks/02-plotFishyResults.ipynb
 
 ### Results
 
 The resulting files are uploaded to Allas:
 
 
+## Production and supply diversity
 
+
+Moving on to: 
+
+Kummu, M. et al. Interplay of trade and food system resilience: gains on supply diversity over time at the cost of trade independency. Glob. Food Sec. 24, 100360 (2020).
+https://doi.org/10.1016/j.gfs.2020.100360
+
+We will need 3-year rolling average of the time series and then Shannon index. 
+
+### 3-year rolling average
