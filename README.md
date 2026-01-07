@@ -71,6 +71,19 @@ Moving on to:
 Kummu, M. et al. Interplay of trade and food system resilience: gains on supply diversity over time at the cost of trade independency. Glob. Food Sec. 24, 100360 (2020).
 https://doi.org/10.1016/j.gfs.2020.100360
 
+
+"All the indicators were calculated for four nutritional components: dietary energy (kcal), protein (g), fat (g), and quantity of vegetables & fruits (g)."
+
 We will need 3-year rolling average of the time series and then Shannon index. 
 
 ### 3-year rolling average
+
+See notebooks/04-plotMovingAverage.ipynb
+
+### Shannon index
+
+See notebooks/05-plotShannonIndex.ipynb
+
+
+
+
