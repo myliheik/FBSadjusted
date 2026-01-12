@@ -51,7 +51,7 @@ There are cases that are left out of the resulting adjusted dataset:
 
 - If an element is not found in the historical dataset (-2013), we omit the data.
 
-- If there are less than four overlapping years in the subset of Element-Area-Item joined from the new dataset and the historical dataset, we omit the data. These cases are saved separately into the 'fishy' dataset.
+- We hope to have four overlapping years in the subset of Element-Area-Item joined from the new dataset and the historical dataset. Even if there is only one overlapping year, we calculate the bias correction. If no overlapping years, we omit the data. The omitted cases are saved separately into the 'fishy' dataset.
 
 - If the adjusted values go below 0, they are set to zero.
 
@@ -62,6 +62,24 @@ There are cases that are left out of the resulting adjusted dataset:
 
 The resulting files are uploaded to Allas:
 
+E.g.
+https://a3s.fi/FoodBalanceSheets/2026-Jan-Food-supply-quantity-kg-capita-yr-2023.csv
+
++ 2026-Jan-Domestic-supply-quantity-2023.csv
++ 2026-Jan-Export-quantity-2023.csv
++ 2026-Jan-Fat-supply-quantity-g-capita-day-2023.csv
++ 2026-Jan-Feed-2023.csv
++ 2026-Jan-Food-2023.csv
++ 2026-Jan-Food-supply-kcal-capita-day-2023.csv
++ 2026-Jan-Food-supply-quantity-kg-capita-yr-2023.csv
++ 2026-Jan-Import-quantity-2023.csv
++ 2026-Jan-Losses-2023.csv
++ 2026-Jan-Other-uses-non-food-2023.csv
++ 2026-Jan-Processing-2023.csv
++ 2026-Jan-Production-2023.csv
++ 2026-Jan-Protein-supply-quantity-g-capita-day-2023.csv
++ 2026-Jan-Seed-2023.csv
++ 2026-Jan-Total-Population-Both-sexes-2023.csv
 
 ## Production and supply diversity
 
@@ -80,7 +98,14 @@ We will need 3-year rolling average of the time series and then Shannon index.
 
 See notebooks/04-plotMovingAverage.ipynb
 
-### Shannon index
+### Diversity
+
+
+**Shannon index**
+
+```math
+H' = ln\frac{1}{\prod_{i}^n s_i^{s_i}} 
+```
 
 See notebooks/05-plotShannonIndex.ipynb
 
