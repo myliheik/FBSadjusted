@@ -51,6 +51,13 @@ def main(args):
         print(f'\nFiles saved in s3 bucket: {args.bucketname}')
 
         my_bucketname = args.bucketname
+        # Check if the bucket exists by creating the bucket.
+        # if it exists, no action.
+        # Source - https://stackoverflow.com/a/26871885
+        # Posted by Daniel, modified by community. See post 'Timeline' for change history
+        # Retrieved 2026-02-03, License - CC BY-SA 3.0
+        
+        bucket = s3_resource.create_bucket(Bucket = my_bucketname)
         
         fp = args.inputpath
 
@@ -66,15 +73,15 @@ def main(args):
             s3_resource.Object(my_bucketname, boto3file).upload_file(filename, ExtraArgs={'ACL':'public-read'})
 
             
-            # If you want to see the list of Allas files:
-            print(f'My files in Allas {my_bucketname}:')
-            
-            my_bucket = s3_resource.Bucket(my_bucketname)
-            
-            for my_bucket_object in my_bucket.objects.all():
-                print(my_bucket_object.key)
+        # If you want to see the list of Allas files:
+        print(f'My files in Allas {my_bucketname}:')
+        
+        my_bucket = s3_resource.Bucket(my_bucketname)
+        
+        for my_bucket_object in my_bucket.objects.all():
+            print(my_bucket_object.key)
 
-            print(f'\nDone.')
+        print(f'\nDone.')
 
     except Exception as e:
         print('\n\nUnable to read input or upload files to Allas. Check prerequisites and see exception output below.')
