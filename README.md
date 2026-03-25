@@ -60,26 +60,29 @@ There are cases that are left out of the resulting adjusted dataset:
 
 ### Results
 
-The resulting files are uploaded to Allas:
+The resulting files are uploaded onto Allas (bucket FoodBalanceSheets-interpolated):
 
 E.g.
-https://a3s.fi/FoodBalanceSheets/2026-Jan-Food-supply-quantity-kg-capita-yr-2023.csv
+https://a3s.fi/FoodBalanceSheets-interpolated/2026-Feb-Food-supply-quantity-kg-capita-yr-2023.csv
 
-+ 2026-Jan-Domestic-supply-quantity-2023.csv
-+ 2026-Jan-Export-quantity-2023.csv
-+ 2026-Jan-Fat-supply-quantity-g-capita-day-2023.csv
-+ 2026-Jan-Feed-2023.csv
-+ 2026-Jan-Food-2023.csv
-+ 2026-Jan-Food-supply-kcal-capita-day-2023.csv
-+ 2026-Jan-Food-supply-quantity-kg-capita-yr-2023.csv
-+ 2026-Jan-Import-quantity-2023.csv
-+ 2026-Jan-Losses-2023.csv
-+ 2026-Jan-Other-uses-non-food-2023.csv
-+ 2026-Jan-Processing-2023.csv
-+ 2026-Jan-Production-2023.csv
-+ 2026-Jan-Protein-supply-quantity-g-capita-day-2023.csv
-+ 2026-Jan-Seed-2023.csv
-+ 2026-Jan-Total-Population-Both-sexes-2023.csv
++ [2026-Feb-Domestic-supply-quantity-2023.csv](https://a3s.fi/FoodBalanceSheets-interpolated/2026-Feb-Domestic-supply-quantity-2023.csv)
++ [2026-Feb-Export-quantity-2023.csv](https://a3s.fi/FoodBalanceSheets-interpolated/2026-Feb-Export-quantity-2023.csv)
++ [2026-Feb-Fat-supply-quantity-g-capita-day-2023.csv](https://a3s.fi/FoodBalanceSheets-interpolated/2026-Feb-Fat-supply-quantity-g-capita-day-2023.csv)
++ [2026-Feb-Feed-2023.csv](https://a3s.fi/FoodBalanceSheets-interpolated/2026-Feb-Feed-2023.csv)
++ [2026-Feb-Food-2023.csv](https://a3s.fi/FoodBalanceSheets-interpolated/2026-Feb-Food-2023.csv)
++ [2026-Feb-Food-supply-kcal-capita-day-2023.csv](https://a3s.fi/FoodBalanceSheets-interpolated/2026-Feb-Food-supply-kcal-capita-day-2023.csv)
++ [2026-Feb-Food-supply-quantity-kg-capita-yr-2023.csv](https://a3s.fi/FoodBalanceSheets-interpolated/2026-Feb-Food-supply-quantity-kg-capita-yr-2023.csv)
++ [2026-Feb-Import-quantity-2023.csv](https://a3s.fi/FoodBalanceSheets-interpolated/2026-Feb-Import-quantity-2023.csv)
++ [2026-Feb-Losses-2023.csv](https://a3s.fi/FoodBalanceSheets-interpolated/2026-Feb-Losses-2023.csv)
++ [2026-Feb-Other-uses-non-food-2023.csv](https://a3s.fi/FoodBalanceSheets-interpolated/2026-Feb-Other-uses-non-food-2023.csv)
++ [2026-Feb-Processing-2023.csv](https://a3s.fi/FoodBalanceSheets-interpolated/2026-Feb-Processing-2023.csv)
++ [2026-Feb-Production-2023.csv](https://a3s.fi/FoodBalanceSheets-interpolated/2026-Feb-Production-2023.csv)
++ [2026-Feb-Protein-supply-quantity-g-capita-day-2023.csv](https://a3s.fi/FoodBalanceSheets-interpolated/2026-Feb-Protein-supply-quantity-g-capita-day-2023.csv)
++ [2026-Feb-Seed-2023.csv](https://a3s.fi/FoodBalanceSheets-interpolated/2026-Feb-Seed-2023.csv)
++ [2026-Feb-Total-Population-Both-sexes-2023.csv](https://a3s.fi/FoodBalanceSheets-interpolated/2026-Feb-Total-Population-Both-sexes-2023.csv)
+
+These are the interpolated time series (gaps filled with linear function). Also non-interpolated time series are available on Allas (bucket FoodBalanceSheets-adjusted).
+
 
 ## Production and supply diversity
 
@@ -109,6 +112,7 @@ H' = ln\frac{1}{\prod_{i}^n s_i^{s_i}}
 
 See notebooks/05-plotShannonIndex.ipynb
 
+The results are on Allas (bucket FoodBalanceSheets-shannon).
 
 
 
