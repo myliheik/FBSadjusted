@@ -1,15 +1,23 @@
 
 ## FBS transformations
 
-The food balance sheet (FBS) by FAO has inconsistencies created by the change in methodology in 2014.
+FAO compiles Food Balance Sheet (FBS) statistics for 191 countries, which present a comprehensive picture of the agrifood situation of a country in a specified reference period, showing the pattern of a country's food supply and utilizations.
 
 Food Balance Sheets at FAO: https://www.fao.org/4/X9892E/X9892e01.htm#TopOfPage
 
-Vonderschmidt et al. (2024) "Analysis combining the multiple FAO food balance sheet datasets needs careful treatment" The Lancet Planetary Health, Volume 8, Issue 2, e69 - e71. Code available at https://github.com/axvonder/FAOComment.git
-
-FAO compiles Food Balance Sheet (FBS) statistics for 191 countries, which present a comprehensive picture of the agrifood situation of a country in a specified reference period, showing the pattern of a country's food supply and utilizations.
-
 Key differences between new and old Food Balance Sheet (FBS) methodology: https://files-faostat.fao.org/production/FBS/Key%20differences%20between%20new%20and%20old%20FBS%20June2022%20.pdf
+
+The food balance sheet (FBS) by FAO has inconsistencies created by the change in methodology in 2014 as noted by Vonderschmidt et al. (2024).
+
+Citations:
+1. Food and Agriculture Organization of the United Nations (FAO). Food Balance Sheet. FAOSTAT. Rome: FAO. Accessed Feb 3, 2026. https://www.fao.org/faostat/en/#data/FBS
+2. Vonderschmidt et al. (2024) "Analysis combining the multiple FAO food balance sheet datasets needs careful treatment" The Lancet Planetary Health, Volume 8, Issue 2, e69 - e71. Code available at https://github.com/axvonder/FAOComment.git
+
+
+### What we did
+
+We harmonized the FAO Food Balance Sheet datasets using the old and new methodology by calculating a per-item correction factor from the years where both datasets overlapped (typically 2010–2013). For each food item, we calculated the mean difference between old and new values and applied that correction to adjust pre-2010 historical values while retaining the newer data unchanged from 2010 onward. Any remaining gaps within each time series were filled using linear interpolation.
+
 
 ### Details
 
