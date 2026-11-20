@@ -92,6 +92,40 @@ https://a3s.fi/FoodBalanceSheets-interpolated/2026-Feb-Food-supply-quantity-kg-c
 These are the interpolated time series (gaps filled with linear function). Also non-interpolated time series are available on Allas (bucket FoodBalanceSheets-adjusted).
 
 
+The file name is `<upload month>-<Element>-<latest data year>.csv`. Each file contains one Element. Script 01 considers Areas and Items present in the new FBS data, but skips Area-Element combinations without historical data; coverage is therefore not necessarily complete.
+
+### Column descriptions
+
+Columns come from FAOSTAT and the [bias correction](python/01-adjustOldFBSdataWithNew-fromBulkDownload.py) and [interpolation](python/02-interpolate-missing-values.py) scripts.
+
+| Column | Description |
+|---|---|
+| `Area Code` | FAOSTAT numeric area code. It is shared between the old and new FBS data. |
+| `Area Code (M49)` | UN M49 country/area code (stored with a leading apostrophe, e.g. `'004`). |
+| `Area` | Country or region name; may differ between old and new data. |
+| `Item Code` | FAOSTAT numeric item (commodity or aggregate) code. |
+| `Item Code (FBS)` | FBS item code (e.g. `'S2905`). |
+| `Item` | Item name, e.g. `Cereals - Excluding Beer`. |
+| `Element Code` | FAOSTAT numeric element code (see the list above). |
+| `Element` | Measure reported in the file, e.g. `Food` or `Production`. |
+| `Year Code` | FAOSTAT year code, matching `Year` in source records. |
+| `Year` | Calendar year of the value. |
+| `Unit` | Unit of `Value` and `NAsInterpolated`, e.g. `1000 t`, `kcal/capita/day`, `g/capita/day`, `kg/capita/yr`, `1000 No` (population). |
+| `Value` | Original or bias-adjusted value, according to `Domain`. Adjusted series combine corrected pre-2010 values with new FBS values and clip all negative values to zero. Empty for inserted years. |
+| `Flag` | Original FAOSTAT source/quality flag; not updated after transformations. |
+| `Domain` | Row origin: `Old FBS`, `New FBS`, `BiasCorrectedAdjusted` (combined adjusted series), or `Interpolated` (inserted year). |
+| `Note` | Source note from the new FBS download, where supplied. |
+| `MeanDiffBias` | Mean new-minus-old difference over overlap years (typically 2010-2013), added to pre-2010 values. Stored to one decimal; correction uses the unrounded value. |
+| `MeanDiffBiasPerc` | Bias as a percentage of the combined old/new overlap mean, to one decimal. Set to zero if that mean is zero. |
+| `OverlappingYears` | Inferred number of overlap years (1-4); `0` means the overlap row count did not qualify for adjustment. Empty for inserted years. |
+| `NAsInterpolated` | Analysis value: `Value` with interpolation results where applicable. Missing values may remain. |
+| `interpolationMethod` | Method (e.g. `Linear`) recorded on inserted year rows only, not on existing rows whose values may also be filled. |
+
+Script 01 retains original and adjusted versions together; avoid double counting. Script 02 keeps the adjusted series where available, otherwise using unadjusted records from the paired `-notAdjusted.csv`. Unadjusted series are not harmonised. Bias columns are populated only on adjusted rows.
+
+Interpolation runs only when year rows are missing between a series' first and last year; otherwise `NAsInterpolated` copies `Value`, including any missing values. Linear interpolation treats sorted rows as equally spaced and can also fill existing trailing missing values with the last observed value.
+
+
 ## Production and supply diversity
 
 
